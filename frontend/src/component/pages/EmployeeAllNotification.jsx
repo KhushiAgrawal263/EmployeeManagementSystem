@@ -53,10 +53,10 @@ const EmployeeAllNotification = () => {
       <div className='adminAllNotification'>
           <div className='adminNotificationHead'>
               <div className={not == 'All' ? "alladmin allAdminNoti" : "alladmin"} onClick={() => setNot('All')}>All({count && count})</div>
-              <div className={not == 'Leave' ? "alladmin allAdminNoti" : "alladmin"} onClick={() => setNot('Leave')}>Employee Leave</div>
+              <div className={not == 'Leave' ? "alladmin allAdminNoti" : "alladmin"} onClick={() => setNot('Leave')}> Leaves</div>
               <div className={not == 'Event' ? "alladmin allAdminNoti" : "alladmin"} onClick={() => setNot('Event')}>Events</div>
               <div className={not == 'welcome' ? "alladmin allAdminNoti" : "alladmin"} onClick={() => setNot('welcome')}>New Employee</div>
-              <div className={not == 'Document' ? "alladmin allAdminNoti" : "alladmin"} onClick={() => setNot('Document')}>Document</div>
+              <div className={not == 'Document' ? "alladmin allAdminNoti" : "alladmin"} onClick={() => setNot('Document')}>Documents</div>
           </div>
 
         {

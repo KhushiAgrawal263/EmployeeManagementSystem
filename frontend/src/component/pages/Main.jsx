@@ -161,7 +161,60 @@ const Main = () => {
                 </div>
 
                 <div className='cradElemet'>
-                    { edit === true ? (
+                { edit === true ? (
+                    <div>
+                        <div className='cardDetails'>
+                            <div className='cardQ'>Email id</div> 
+                            <div className='cardA'><input 
+                                type='email' 
+                                value = {email} 
+                                onChange={emailHandler}
+                                placeholder={data.email}
+                            /> </div>
+                        </div>
+
+                        <div className='cardDetails'>
+                            <div className='cardQ'>Date Of Birth</div> 
+                            <div className='cardA'>
+                                <input 
+                                    type="date" 
+                                    value = {dob} 
+                                    onChange={dobHandler}
+                                    placeholder={data.dob}
+                                />
+                            </div>
+                        </div>
+                        <div className='cardDetails'>
+                            <div className='cardQ'>Address</div> 
+                            <div className='cardA'>
+                                 <input type="text" value = {address} onChange={addressHandler} placeholder={data.address} />
+                            </div>
+                        </div>
+                        <div className='cardDetails'>
+                            <div className='cardQ'>Contact Number</div> 
+                            <div className='cardA'>
+                              <input type="number" value = {contact} onChange={contactHandler} placeholder={data.contactNo}/>
+                            </div>
+                        </div>
+                        <div className='cardDetails'>
+                            <div className='cardQ'>Aadhar Number</div> 
+                            <div className='cardA'>
+                              <input type="number" value = {aadhar} onChange={aadharHandler} placeholder= {data.aadharNo} />
+                            </div>
+                        </div>
+                        <button
+                                onClick = {PersonalSubmitHandler}
+                            >Save</button>
+                    </div>) : (
+                        <div>
+                            <div className='cardDetails'><div className='cardQ'>Email id</div> <div className='cardA'>: {data && data.email}</div></div>
+                            <div className='cardDetails'><div className='cardQ'>Date Of Birth</div> <div className='cardA'>: {data && data.dob}</div></div>
+                            <div className='cardDetails'><div className='cardQ'>Address</div> <div className='cardA'>: {data && data.address}</div></div>
+                            <div className='cardDetails'><div className='cardQ'>Contact Number</div> <div className='cardA'>: {data && data.contactNo}</div></div>
+                            <div className='cardDetails'><div className='cardQ'>Aadhar Number</div> <div className='cardA'>: {data && data.aadharNo} </div></div>
+                        </div>
+                    )}
+                    {/* { edit === true ? (
                     <div>
                         <div className='cardDetails'>
                             <div className='cardQ'>Email id</div> 
@@ -207,7 +260,7 @@ const Main = () => {
                             <div className='cardDetails'><div className='cardQ'>Contact Number</div> <div className='cardA'>: {data && data.contactNo}</div></div>
                             <div className='cardDetails'><div className='cardQ'>Aadhar Number</div> <div className='cardA'>: {data && data.aadharNo} </div></div>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </div>
 
