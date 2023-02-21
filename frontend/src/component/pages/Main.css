@@ -159,6 +159,12 @@
     font-size : 1.1rem;
 }
 
+.cardA input {
+    width: 200px;
+    font-size: 1rem;
+    padding-left: 5px;
+}
+
 
 @keyframes cards{
     from {left : -1000px;}
