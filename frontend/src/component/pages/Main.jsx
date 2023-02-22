@@ -13,6 +13,7 @@ const Main = () => {
     const [data,setData] = useState();
     const [images, setImages] = useState('Image/girl.jpg');
     const [edit, setEdit] = useState(false);
+    const [edited,setEdited] =useState(false);
     const [email, setEmail] = useState(data && data.email);
     const [dob, setDob] = useState();
     const [address, setAddress] = useState();
@@ -44,9 +45,10 @@ const Main = () => {
             const data = await res.json();
             console.log(data);
             setData(data);
+            setEdited(false);
         }
         fetchurl();
-      },[userURL,edit]);
+      },[userURL,edit,edited]);
 
     const imageHandler = (e) => {
             setImages(e.target.files[0]);
@@ -55,16 +57,16 @@ const Main = () => {
 
     const submitForm=(e)=>{
         e.preventDefault();
-        console.log(images);
+        const image = e.target.files[0];
         const formData = new FormData();
-        formData.append("image", images);
+        formData.append("image", image);
 
         axios
             .post(`http://localhost:8000/upload/${userId}`, formData)
             .then((res) => {
-            alert("File Upload Success");
+            alert("Image Updated Successfully!");
             setBtnState(false);
-            window.location.href='/home'
+            setEdited(true);
             })
             .catch((err) => console.log(err));
     }
@@ -113,8 +115,9 @@ const Main = () => {
               body: JSON.stringify(val)
           });
           const data = await res.json();
-          alert("Data Updated successfully");
-          window.location.href='/home'
+          setEdited(true);
+        //   alert("Data Updated successfully");
+        //   window.location.href='/home'
     }
 
   return (
@@ -134,7 +137,7 @@ const Main = () => {
              <div className='mainInfoName'>
                 <h1>{data && data.name}</h1>
                 <h3>{data && data.designation}</h3>
-                <form className='imageUploadForm'>
+                {/* <form className='imageUploadForm'>
                     <label htmlFor="img"
                     className="mainButtonEdit"> <FontAwesomeIcon icon={faEdit}/> </label>
                     <input type="file"  id="img" 
@@ -142,6 +145,15 @@ const Main = () => {
                     className="photoInput" />
                     {btnState && <button className="mainButtonEdit" type='submit' onClick={submitForm} > 
                         <FontAwesomeIcon icon={faUpload} /> </button>}
+                </form> */}
+                <form className='imageUploadForm'>
+                    <label htmlFor="img"
+                    className="mainButtonEdit"> Update Profile Photo</label>
+                    <input type="file"  id="img" 
+                    onChange={submitForm}
+                    className="photoInput" />
+                    {/* {btnState && <button className="mainButtonEdit" type='submit' onClick={submitForm} > 
+                        <FontAwesomeIcon icon={faUpload} /> </button>} */}
                 </form>
                 {
                     data && (data.docStatus=='none' || data.docStatus=='pending') ? 

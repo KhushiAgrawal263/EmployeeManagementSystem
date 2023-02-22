@@ -5,8 +5,6 @@ import NavBar from '../NavBar';
 import { useState } from 'react';
 import axios from 'axios';
 import emailjs from 'emailjs-com'
-//validation
-
 
 const EmployeeAdd = () => {
   const [val,setVal] = useState({
@@ -19,11 +17,7 @@ const EmployeeAdd = () => {
       travel:0,special:0,pf:0,gross:0,cut:0,inHand:0
     }
   });
-  const [user,setUser] = useState();
-  const [btn,setBtn] = useState(false);
-  const [btnState,setBtnState] = useState(false);
   const [images, setImages] = useState();
-  const [id, setId] = useState();
 
   const [name, setName] = useState();
   const [nameError, setNameError] = useState(false);
@@ -216,7 +210,6 @@ const EmployeeAdd = () => {
 
   const submitHandler=async (e)=>{
     e.preventDefault();
-    console.log(val);
     const res = await fetch('http://localhost:8000/register',{
       method: 'POST',
       headers: {
@@ -226,31 +219,28 @@ const EmployeeAdd = () => {
       body: JSON.stringify(val)
     });
     const data = await res.json();
-    console.log(data);
-    setUser(data)
-    setBtn(true);
-    setId(data._id)
+
+    // update employee ID
+    const newVal = {
+      empId: data.unique<10 ? `2023FB0${data.unique}` : `2023FB${data.unique}`
     }
+    const resp = await fetch(`http://localhost:8000/${data._id}`,{
+        method: 'PUT',
+        headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newVal)
+      });
+      const dataa = await resp.json();
 
-  // get image
-  const imageHandler = (e) => {
-    console.log(e.target.files[0]);
-    setImages(e.target.files[0]);
-    setBtnState(true);
-  }
-
-  // upload image
-  const submitForm=async (e)=>{
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("image", images);
-
-    axios
-        .post(`http://localhost:8000/upload/${id}`, formData)
+      const formData = new FormData();
+      formData.append("image", images);
+      axios
+        .post(`http://localhost:8000/upload/${data._id}`, formData)
         .then((res) => {
-        alert("File Upload success");
-        setBtnState(false);
-        // window.location.href='/home'
+        alert("User Added Successfully!");
+        window.location.href='/addEmployee';
         })
         .catch((err) => console.log(err));
 
@@ -265,15 +255,15 @@ const EmployeeAdd = () => {
         // Generate Notifications
         const notifi = {
           type:"New employee",
-          message:`Say hey! To the new employee, ${user.name}`,
+          message:`Say hey! To the new employee, ${data.name}`,
           date:date,
           role:"user",
           status:"unseen"
-      }
-      console.log(notifi);
+        }
+        console.log(notifi);
 
       // update all users notifications
-      const generateNotifi = await fetch(`http://localhost:8000/user/oneuser/addnotifi/${user._id}`,{
+      const generateNotifi = await fetch(`http://localhost:8000/user/oneuser/addnotifi/${data._id}`,{
             method: 'POST',
             headers: {
                 accept: 'application/json',
@@ -284,41 +274,35 @@ const EmployeeAdd = () => {
         const Notifi = await generateNotifi.json();
         console.log(Notifi);
 
-        if(Notifi){
-          let template ={
-            name:user.name,
-            email:user.email,
-          }
-          emailjs.send('service_io91ds2', 'template_0g1pg9a', template, '6qGUvnhs40iNBMVST')
-            .then((result) => {
-                console.log(result.text);
-            }, (error) => {
-                console.log(error.text);
-          });
-        }
+        // if(Notifi){
+        //   let template ={
+        //     name:data.name,
+        //     email:data.email,
+        //   }
+        //   emailjs.send('service_io91ds2', 'template_0g1pg9a', template, '6qGUvnhs40iNBMVST')
+        //     .then((result) => {
+        //         console.log(result.text);
+        //     }, (error) => {
+        //         console.log(error.text);
+        //   });
+        // }
+    }
+
+  // get image
+  const imageHandler = (e) => {
+    setImages(e.target.files[0]);
   }
+
 
   return (
     <>
         <NavBar/>
         <Sidebar />
-        {
-          btn ? 
-            <div className='employeeAdd'>                                                       
-              <form>
-                <label htmlFor="img" className="btn btn-main btn-outline-dark">Upload New Image</label>
-                <input type="file"  id="img" onChange={imageHandler} className="photoInput" />
-                {btnState && <button className="btn upload-btn btn-outline-dark" type='submit' onClick={submitForm} >Upload</button>}
-              </form>
-            </div>
-        :
-
         <div className='employeeAddBg'>
           <form ref={form} onSubmit={submitHandler} className='employeeAdd'>
-          {/* <form onSubmit={submitHandler} className='employeeAdd'> */}
-          <h4>Hi Admin, Add New Employee!</h4>
-          
-        <div className='pDetails'>
+            <h4>Hi Admin, Add New Employee!</h4>
+            
+              <div className='pDetails'>
                 <table className="table">
                   <th scope="col">Personal Details :</th>
                   <tbody>
@@ -479,13 +463,15 @@ const EmployeeAdd = () => {
                   </tbody>
                 </table>
               </div>
-              
-              <button className='btn btn-success' type='submit'   >Next</button>
-              </form>
+              <div className='employeeAdd'>                                                       
+                <label htmlFor="img" className="btn btn-main btn-outline-dark">Upload New Image</label>
+                <input type="file"  id="img" onChange={imageHandler} className="photoInput" name='image' required />
+              </div>
+              <button className='btn btn-success' type='submit'>Save</button>
+            </form>
          </div>
-        }
     </>
   )
 }
 
-export default EmployeeAdd
+export default EmployeeAdd;

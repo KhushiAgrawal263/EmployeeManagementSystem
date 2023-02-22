@@ -14,7 +14,17 @@ const Apply = () => {
     const [endDate, setEndDate] = useState('');
     const [leaveType,setLeaveType] = useState();
     const [reason,setReason] = useState();
-    const [file,setFile] = useState();
+    const [min,setMin] = useState();
+
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; 
+    var yyyy = today.getFullYear();
+        if(dd<10) {dd='0'+dd;} 
+        if(mm<10) {mm='0'+mm;} 
+    const todaysDate = [dd, mm, yyyy].join('-');
+    const mindate=[yyyy,mm,dd].join('-');
+
     
     const [pending, setPending] = useState([]);
     const [approved, setApproved] = useState([]);
@@ -33,17 +43,19 @@ const Apply = () => {
       }
 
     const range = (array,val)=>{
-        console.log(array);
         array.map((eachday)=>{
-            console.log(eachday.dates);
+
             // set all pending dates in array
             if(val=="pending"){
                 eachday.dates.forEach(date=>{
-                    setPending(arr => [...new Set(arr),date.date])
-                })
-            }else if(val=="approved"){
-                eachday.dates.forEach(date=>{
-                    setApproved(arr => [...new Set(arr),date])
+                    var g1 = new Date(todaysDate.split('-')[2],todaysDate.split('-')[1],todaysDate.split('-')[0]);
+                    var g2 = new Date(date.date.split('-')[2],date.date.split('-')[1],date.date.split('-')[0]);
+                    console.log(g2);
+                    if(g2 > g1)
+                   {
+                       console.log(date.date,todaysDate);
+                       setPending(arr => [...new Set(arr),date.date])
+                   } 
                 })
             }
         })
@@ -105,7 +117,7 @@ const Apply = () => {
             });
             const data = await res.json();
             console.log(data);
-            alert(data);
+            // alert(data);
 
             // get this user
             const getUser = await fetch(`http://localhost:8000/${user.id}`);
@@ -113,7 +125,8 @@ const Apply = () => {
             var newCount = resu.pendingLeaves+array.length;
             console.log(newCount);
             const value={
-                pendingLeaves:newCount
+                pendingLeaves:newCount,
+                leaveLastModified:Date.now(),
             }
             // update the user
             const updateuser = await fetch(`http://localhost:8000/${user.id}`,{
@@ -125,19 +138,11 @@ const Apply = () => {
                 body: JSON.stringify(value)
             });
 
-            var today = new Date();
-            var dd = today.getDate();
-    
-            var mm = today.getMonth()+1; 
-            var yyyy = today.getFullYear();
-            if(dd<10) {dd='0'+dd;} 
-            if(mm<10) {mm='0'+mm;} 
-            const date = [dd, mm, yyyy].join('-');
             // Generate Notifications
             const notifi = {
               type:"Leave Applied",
               message:`${user.name}(${user.empId}) applied for leave.`,
-              date:date,
+              date:todaysDate,
               role:"admin",
               status:"unseen"
             }
@@ -220,6 +225,7 @@ const Apply = () => {
                                     name='startDate'
                                     value = {startDate}
                                     onChange = {(e) => setStartDate(e.target.value)}
+                                    min={mindate}
                                     >
                                     </input>
                             </div>
@@ -230,6 +236,7 @@ const Apply = () => {
                                 name='endDate'
                                 value = {endDate}
                                 onChange = {(e) => setEndDate(e.target.value)}
+                                min={mindate}
                                 ></input>
                             </div>
 
@@ -252,7 +259,7 @@ const Apply = () => {
                         <div className='leaveDoc'>
                             Upload Document :
                             {/* <label class="form-label" for="customFile">Upload Document : </label> */}
-                            <input type="file" class="form-control" id="customFile" name="doc" onChange={(e)=>setFile(e.target.files[0])} />
+                            <input type="file" class="form-control" id="customFile" name="doc" />
                             <p>
                                 Supported file type : pdf, png, jpg, jpeg, docx, doc, ppt, pptx, txt. <br />
                                 File size limit : 5MB
