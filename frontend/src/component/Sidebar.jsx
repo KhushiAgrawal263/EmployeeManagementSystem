@@ -62,7 +62,7 @@ const Sidebar = () => {
             <div className= {selectedPage == '/reviewLeave' || selectedPage == '/leaveDetails' ? 'sideItem1 sideItem' : 'sideItem'} >
               <div className='sideLink'>
                 <FontAwesomeIcon icon={faFilePen} className='fAIcon' />
-                <div>Leave</div>
+                <div>Leaves</div>
               </div>
             </div>
           </Link>
