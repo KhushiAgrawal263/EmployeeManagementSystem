@@ -14,8 +14,7 @@ const AddNotification = () => {
 
   var today = new Date();
   var dd = today.getDate();
-
-  var mm = today.getMonth() + 1;
+  var mm = today.getMonth()+1; 
   var yyyy = today.getFullYear();
   if (dd < 10) {
     dd = "0" + dd;
@@ -29,9 +28,10 @@ const AddNotification = () => {
   const handleSubmit = async () => {
     console.log(date, type, message);
     const notifi = {
-      type: type,
-      message: message,
-      holidayDate: date,
+      type:type,
+      message:`${date}, ${message}`,
+      holidayDate:date,
+
       date: notifidate,
       role: "user",
       status: "unseen",

@@ -17,13 +17,10 @@ const Sidebar = () => {
   const [employee, setEmployee] = useState();
 
   const selectedPage = window.location.pathname;
-  console.log(`jdnijndklo${selectedPage}`);
 
   const navLinks = document.querySelectorAll('div div Link');
-  console.log(` jhclkh : ${navLinks}`)
   navLinks.forEach(element => {
     if(element.to.includes(`${selectedPage}`)){
-      console.log(`selected : ${selectedPage}`)
       element.classList.add('sideItem1');
     }
   });

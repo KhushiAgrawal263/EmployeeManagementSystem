@@ -7,10 +7,10 @@ router.post('/apply/:id',async (req,res)=>{
     try {
         const result = await Leave.exists({id: req.params.id});
         if(result==null){
-            const user = await Leave.create(req.body);
+            const user = await Leave.create({...req.body,leaveLastModified:Date.now()});
                 res.status(200).json("Leave Applied at first successsfully !!!");
         }else{
-            const updatedUser=await Leave.findOneAndUpdate({id:req.params.id},{ $push:{ pending:req.body.pending} },{new:true},
+            const updatedUser=await Leave.findOneAndUpdate({id:req.params.id},{ $push:{ pending:req.body.pending},leaveLastModified:Date.now()},{new:true},
                 function (err, docs) {
                     if (err){
                         console.log(err)
@@ -45,7 +45,6 @@ router.get('/leaves/getallLeaves',async(req,res)=>{
         res.status(401).json(error);
     }
 })
-
 
 // Get users by date
 router.get('/usersbydate/:date',async(req,res)=>{

@@ -13,15 +13,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const Main = () => {
-  const [data, setData] = useState();
-  const [images, setImages] = useState("Image/girl.jpg");
-  const [edit, setEdit] = useState(false);
-  const [email, setEmail] = useState(data && data.email);
-  const [dob, setDob] = useState();
-  const [address, setAddress] = useState();
-  const [contact, setContact] = useState();
-  const [aadhar, setAadhar] = useState();
-  const [btnState, setBtnState] = useState(false);
+    const [data,setData] = useState();
+    const [images, setImages] = useState('Image/girl.jpg');
+    const [edit, setEdit] = useState(false);
+    const [edited,setEdited] =useState(false);
+    const [email, setEmail] = useState(data && data.email);
+    const [dob, setDob] = useState();
+    const [address, setAddress] = useState();
+    const [contact, setContact] = useState();
+    const [aadhar, setAadhar] = useState();
+    const [btnState,setBtnState] = useState(false);
 
   const u = "http://localhost:8000";
   const user = JSON.parse(localStorage.getItem("EMSuser"));
@@ -36,41 +37,42 @@ const Main = () => {
     };
   }
 
-  useEffect(() => {
-    const fetchurl = async () => {
-      const res = await fetch(userURL, {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-        },
-      });
-      const data = await res.json();
-      console.log(data);
-      setData(data);
-    };
-    fetchurl();
-  }, [userURL, edit]);
+    useEffect(() => {
+        const fetchurl= async ()=>{
+            const res = await fetch(userURL,{
+                method: 'GET',
+                headers: {
+                    accept: 'application/json',
+                },
+            });
+            const data = await res.json();
+            console.log(data);
+            setData(data);
+            setEdited(false);
+        }
+        fetchurl();
+      },[userURL,edit,edited]);
 
   const imageHandler = (e) => {
     setImages(e.target.files[0]);
     setBtnState(true);
   };
 
-  const submitForm = (e) => {
-    e.preventDefault();
-    console.log(images);
-    const formData = new FormData();
-    formData.append("image", images);
+    const submitForm=(e)=>{
+        e.preventDefault();
+        const image = e.target.files[0];
+        const formData = new FormData();
+        formData.append("image", image);
 
-    axios
-      .post(`http://localhost:8000/upload/${userId}`, formData)
-      .then((res) => {
-        alert("File Upload Success");
-        setBtnState(false);
-        window.location.href = "/home";
-      })
-      .catch((err) => console.log(err));
-  };
+        axios
+            .post(`http://localhost:8000/upload/${userId}`, formData)
+            .then((res) => {
+            alert("Image Updated Successfully!");
+            setBtnState(false);
+            setEdited(true);
+            })
+            .catch((err) => console.log(err));
+    }
 
   const EditHandler = () => {
     setEdit(true);
@@ -96,29 +98,30 @@ const Main = () => {
     setAadhar(e.target.value);
   };
 
-  // update data
-  const PersonalSubmitHandler = async () => {
-    setEdit(false);
-    const val = {
-      email: email,
-      dob: dob,
-      aadharNo: aadhar,
-      address: address,
-      contactNo: contact,
-    };
-    console.log(val);
-    const res = await fetch(userURL, {
-      method: "PUT",
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(val),
-    });
-    const data = await res.json();
-    alert("Data Updated successfully");
-    window.location.href = "/home";
-  };
+    // update data
+    const PersonalSubmitHandler = async () => {
+        setEdit(false);
+        const val ={
+            email:email,
+            dob:dob,
+            aadharNo :aadhar,
+            address:address,
+            contactNo:contact
+          }
+          console.log(val);
+          const res = await fetch(userURL,{
+              method: 'PUT',
+              headers: {
+                  accept: 'application/json',
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(val)
+          });
+          const data = await res.json();
+          setEdited(true);
+        //   alert("Data Updated successfully");
+        //   window.location.href='/home'
+    }
 
   return (
     <>

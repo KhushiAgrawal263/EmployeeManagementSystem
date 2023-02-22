@@ -33,7 +33,6 @@ const EmployeeAdd = () => {
   const [btn, setBtn] = useState(false);
   const [btnState, setBtnState] = useState(false);
   const [images, setImages] = useState();
-  const [id, setId] = useState();
 
   const [name, setName] = useState();
   const [nameError, setNameError] = useState(false);
@@ -265,9 +264,8 @@ const EmployeeAdd = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(val);
-    const res = await fetch("http://localhost:8000/register", {
-      method: "POST",
+    const res = await fetch('http://localhost:8000/register',{
+      method: 'POST',
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
@@ -275,33 +273,30 @@ const EmployeeAdd = () => {
       body: JSON.stringify(val),
     });
     const data = await res.json();
-    console.log(data);
-    setUser(data);
-    setBtn(true);
-    setId(data._id);
-  };
 
-  // get image
-  const imageHandler = (e) => {
-    console.log(e.target.files[0]);
-    setImages(e.target.files[0]);
-    setBtnState(true);
-  };
+    // update employee ID
+    const newVal = {
+      empId: data.unique<10 ? `2023FB0${data.unique}` : `2023FB${data.unique}`
+    }
+    const resp = await fetch(`http://localhost:8000/${data._id}`,{
+        method: 'PUT',
+        headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newVal)
+      });
+      const dataa = await resp.json();
 
-  // upload image
-  const submitForm = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("image", images);
-
-    axios
-      .post(`http://localhost:8000/upload/${id}`, formData)
-      .then((res) => {
-        alert("File Upload success");
-        setBtnState(false);
-        // window.location.href='/home'
-      })
-      .catch((err) => console.log(err));
+      const formData = new FormData();
+      formData.append("image", images);
+      axios
+        .post(`http://localhost:8000/upload/${data._id}`, formData)
+        .then((res) => {
+        alert("User Added Successfully!");
+        window.location.href='/addEmployee';
+        })
+        .catch((err) => console.log(err));
 
     var today = new Date();
     var dd = today.getDate();
@@ -315,82 +310,52 @@ const EmployeeAdd = () => {
     }
     const date = [dd, mm, yyyy].join("-");
 
-    // Generate Notifications
-    const notifi = {
-      type: "New employee",
-      message: `Say hey! To the new employee, ${user.name}`,
-      date: date,
-      role: "user",
-      status: "unseen",
-    };
-    console.log(notifi);
+        // Generate Notifications
+        const notifi = {
+          type:"New employee",
+          message:`Say hey! To the new employee, ${data.name}`,
+          date:date,
+          role:"user",
+          status:"unseen"
+        }
+        console.log(notifi);
 
-    // update all users notifications
-    const generateNotifi = await fetch(
-      `http://localhost:8000/user/oneuser/addnotifi/${user._id}`,
-      {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(notifi),
-      }
-    );
-    const Notifi = await generateNotifi.json();
-    console.log(Notifi);
+      // update all users notifications
+      const generateNotifi = await fetch(`http://localhost:8000/user/oneuser/addnotifi/${data._id}`,{
+            method: 'POST',
+            headers: {
+                accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(notifi)
+        });
+        const Notifi = await generateNotifi.json();
+        console.log(Notifi);
 
-    if (Notifi) {
-      let template = {
-        name: user.name,
-        email: user.email,
-      };
-      emailjs
-        .send(
-          "service_io91ds2",
-          "template_0g1pg9a",
-          template,
-          "6qGUvnhs40iNBMVST"
-        )
-        .then(
-          (result) => {
-            console.log(result.text);
-          },
-          (error) => {
-            console.log(error.text);
-          }
-        );
+        // if(Notifi){
+        //   let template ={
+        //     name:data.name,
+        //     email:data.email,
+        //   }
+        //   emailjs.send('service_io91ds2', 'template_0g1pg9a', template, '6qGUvnhs40iNBMVST')
+        //     .then((result) => {
+        //         console.log(result.text);
+        //     }, (error) => {
+        //         console.log(error.text);
+        //   });
+        // }
     }
-  };
+
+  // get image
+  const imageHandler = (e) => {
+    setImages(e.target.files[0]);
+  }
+
 
   return (
     <>
       <NavBar />
       <Sidebar />
-      {btn ? (
-        <div className="employeeAdd">
-          <form>
-            <label htmlFor="img" className="btn btn-main btn-outline-dark">
-              Upload New Image
-            </label>
-            <input
-              type="file"
-              id="img"
-              onChange={imageHandler}
-              className="photoInput"
-            />
-            {btnState && (
-              <button
-                className="btn upload-btn btn-outline-dark"
-                type="submit"
-                onClick={submitForm}
-              >
-                Upload
-              </button>
-            )}
-          </form>
-        </div>
-      ) : (
         <div className="employeeAddBg">
           <form ref={form} onSubmit={submitHandler} className="employeeAdd">
             {/* <form onSubmit={submitHandler} className='employeeAdd'> */}
@@ -711,99 +676,43 @@ const EmployeeAdd = () => {
               <table className="table">
                 <th scope="col">Bank Details :</th>
 
-                <tbody>
-                  <tr>
-                    <th scope="row">Account Number : </th>
-                    <td>
-                      {" "}
-                      <input
-                        type="number"
-                        name="accNo"
-                        onChange={handleAccount}
-                        required
-                      />
-                      {ANumError ? (
-                        <span style={{ color: "red" }}>
-                          {" "}
-                          *should have 10 to 15 digits
-                        </span>
-                      ) : (
-                        ""
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">IFSC code : </th>
-                    <td>
-                      {" "}
-                      <input
-                        type="text"
-                        name="ifscCode"
-                        onChange={handleAccount}
-                        required
-                      />
-                      {IfscError ? (
-                        <span style={{ color: "red" }}>
-                          {" "}
-                          *enter Proper IFSC code
-                        </span>
-                      ) : (
-                        ""
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Branch : </th>
-                    <td>
-                      {" "}
-                      <input
-                        type="text"
-                        name="branch"
-                        onChange={handleAccount}
-                        required
-                      />
-                      {BranchError ? (
-                        <span style={{ color: "red" }}>
-                          {" "}
-                          *branch should be more than 3 letters
-                        </span>
-                      ) : (
-                        ""
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Pin Code : </th>
-                    <td>
-                      {" "}
-                      <input
-                        type="number"
-                        name="pinCode"
-                        onChange={handleAccount}
-                        required
-                      />
-                      {PinError ? (
-                        <span style={{ color: "red" }}>
-                          {" "}
-                          *enter valid PIN CODE{" "}
-                        </span>
-                      ) : (
-                        ""
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <button className="btn btn-success" type="submit">
-              Next
-            </button>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Account Number : </th>
+                      <td> <input type="number" name='accNo' onChange={handleAccount} required /> 
+                      {ANumError ? <span style={{color : 'red'}}> *should have 10 to 15 digits</span> : '' }
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">IFSC code : </th>
+                      <td> <input type="text" name='ifscCode' onChange={handleAccount} required /> 
+                      {IfscError ? <span style={{color : 'red'}}> *enter Proper IFSC code</span> : '' }
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Branch : </th>
+                      <td> <input type="text" name='branch' onChange={handleAccount} required /> 
+                      {BranchError ? <span style={{color : 'red'}}> *branch should be more than 3 letters</span> : '' }
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Pin Code : </th>
+                      <td> <input type="number" name='pinCode' onChange={handleAccount} required /> 
+                      {PinError ? <span style={{color : 'red'}}> *enter valid PIN CODE </span> : '' }
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className='employeeAdd'>                                                       
+                <label htmlFor="img" className="btn btn-main btn-outline-dark">Upload New Image</label>
+                <input type="file"  id="img" onChange={imageHandler} className="photoInput" name='image' required />
+              </div>
+              <button className='btn btn-success' type='submit'>Save</button>
           </form>
         </div>
-      )}
     </>
-  );
+  )
 };
 
 export default EmployeeAdd;

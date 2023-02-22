@@ -8,16 +8,24 @@ import axios from "axios";
 import emailjs from "emailjs-com";
 
 const Apply = () => {
-  const [date, setDate] = useState(new Date());
-  const [allDates, setAllDates] = useState();
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [leaveType, setLeaveType] = useState();
-  const [reason, setReason] = useState();
-  const [file, setFile] = useState();
+    const [date, setDate] = useState(new Date())
+    const [allDates, setAllDates] = useState()
+    const [startDate, setStartDate] =useState('');
+    const [endDate, setEndDate] = useState('');
+    const [leaveType,setLeaveType] = useState();
+    const [reason,setReason] = useState();
+    const [min,setMin] = useState();
 
-  const [pending, setPending] = useState([]);
-  const [approved, setApproved] = useState([]);
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; 
+    var yyyy = today.getFullYear();
+        if(dd<10) {dd='0'+dd;} 
+        if(mm<10) {mm='0'+mm;} 
+    const todaysDate = [dd, mm, yyyy].join('-');
+    const mindate=[yyyy,mm,dd].join('-');    
+    const [pending, setPending] = useState([]);
+    const [approved, setApproved] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("EMSuser"));
   const url = "http://localhost:8000/leave";
@@ -31,24 +39,25 @@ const Apply = () => {
     }
     return dates;
   }
+  
+    const range = (array,val)=>{
+        array.map((eachday)=>{
 
-  const range = (array, val) => {
-    console.log(array);
-    array.map((eachday) => {
-      console.log(eachday.dates);
-      // set all pending dates in array
-      if (val == "pending") {
-        eachday.dates.forEach((date) => {
-          setPending((arr) => [...new Set(arr), date.date]);
-        });
-      } else if (val == "approved") {
-        eachday.dates.forEach((date) => {
-          setApproved((arr) => [...new Set(arr), date]);
-        });
+            // set all pending dates in array
+            if(val=="pending"){
+                eachday.dates.forEach(date=>{
+                    var g1 = new Date(todaysDate.split('-')[2],todaysDate.split('-')[1],todaysDate.split('-')[0]);
+                    var g2 = new Date(date.date.split('-')[2],date.date.split('-')[1],date.date.split('-')[0]);
+                    console.log(g2);
+                    if(g2 > g1)
+                   {
+                       console.log(date.date,todaysDate);
+                       setPending(arr => [...new Set(arr),date.date])
+                   } 
+                })
+            }
+        })
       }
-    });
-  };
-
   // Get leaves
   useEffect(() => {
     const fetchData = async () => {
@@ -283,7 +292,6 @@ const Apply = () => {
                   class="form-control"
                   id="customFile"
                   name="doc"
-                  onChange={(e) => setFile(e.target.files[0])}
                 />
                 <p>
                   Supported file type : pdf, png, jpg, jpeg, docx, doc, ppt,
@@ -309,6 +317,6 @@ const Apply = () => {
       </div>
     </>
   );
-};
+  };
 
 export default Apply;
