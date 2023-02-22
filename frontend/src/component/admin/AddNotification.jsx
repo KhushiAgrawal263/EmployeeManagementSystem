@@ -1,66 +1,82 @@
-import React, { useState } from 'react'
-import './AddNotification.css'
+import React, { useState } from "react";
+import "./AddNotification.css";
 
 const AddNotification = () => {
-  const [date,setDate] = useState();
-  const [message,setMessage]= useState();
-  const [type,setType]= useState();
+  const [date, setDate] = useState();
+  const [message, setMessage] = useState();
+  const [type, setType] = useState();
 
-  const reversedate=(date)=>{
-    const [year, month, day] = date.split('-');
-    const result = [day, month, year].join('-');
-    return result
-  }
+  const reversedate = (date) => {
+    const [year, month, day] = date.split("-");
+    const result = [day, month, year].join("-");
+    return result;
+  };
 
   var today = new Date();
   var dd = today.getDate();
 
-  var mm = today.getMonth()+1; 
+  var mm = today.getMonth() + 1;
   var yyyy = today.getFullYear();
-  if(dd<10) {dd='0'+dd;} 
-  if(mm<10) {mm='0'+mm;} 
-  const notifidate = [dd, mm, yyyy].join('-');
+  if (dd < 10) {
+    dd = "0" + dd;
+  }
+  if (mm < 10) {
+    mm = "0" + mm;
+  }
+  const notifidate = [dd, mm, yyyy].join("-");
   console.log(notifidate);
 
-  const handleSubmit = async ()=>{
-    console.log(date,type,message);
+  const handleSubmit = async () => {
+    console.log(date, type, message);
     const notifi = {
-      type:type,
-      message:message,
-      holidayDate:date,
+      type: type,
+      message: message,
+      holidayDate: date,
       date: notifidate,
-      role:"user",
-      status:"unseen"
-  }
-  console.log(notifi);
+      role: "user",
+      status: "unseen",
+    };
+    console.log(notifi);
 
-  const generateNotifi = await fetch('http://localhost:8000/user/user/addnotifi',{
-        method: 'POST',
+    const generateNotifi = await fetch(
+      "http://localhost:8000/user/user/addnotifi",
+      {
+        method: "POST",
         headers: {
-            accept: 'application/json',
-            'Content-Type': 'application/json'
+          accept: "application/json",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(notifi)
-    });
+        body: JSON.stringify(notifi),
+      }
+    );
     const Notifi = await generateNotifi.json();
     console.log(Notifi);
-    window.location.href= '/adminCal'
-  }
-
+    window.location.href = "/adminCal";
+  };
 
   return (
-    <div className='add-notification'>
-        <input type="date" onChange={(e)=>setDate(reversedate(e.target.value))} />
-        <select onChange={(e)=>setType(e.target.value)}>
-            <option >Select--</option>
-            <option value="Holiday">Holiday</option>
-            <option value="Saturday Status">Saturday Status</option>
+    <form>
+      <div className="add-notification">
+        <input
+          type="date"
+          onChange={(e) => setDate(reversedate(e.target.value))}
+          required
+        />
+        <select onChange={(e) => setType(e.target.value)} required>
+          <option>Select--</option>
+          <option value="Holiday">Holiday</option>
+          <option value="Saturday Status">Saturday Status</option>
         </select>
-        <label className='message'>Message</label>
-        <input type="text" onChange={(e)=>setMessage(e.target.value)}/>
+        <label className="message">Message</label>
+        <input
+          type="text"
+          onChange={(e) => setMessage(e.target.value)}
+          required
+        />
         <button onClick={handleSubmit}>SEND</button>
-    </div>
-  )
-}
+      </div>
+    </form>
+  );
+};
 
-export default AddNotification
+export default AddNotification;
