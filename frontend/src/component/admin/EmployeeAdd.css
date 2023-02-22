@@ -40,6 +40,27 @@
     width : 150px;
 }
 
+.passwordField{
+    display: flex;
+    flex-direction: row;
+    /* justify-content: space-around; */
+    /* border: 2px solid red; */
+}
+
+.eyePassword{
+    margin: 10px;
+}
+.pDetails tr th {
+    /* border: 2px solid black; */
+    width: 30%;
+}
+
+.pDetails tr td {
+    /* border: 2px solid red; */
+    /* width: 70%; */
+    /* display: flex; */
+}
+
 @media only screen and (max-width: 600px){
     .employeeAdd {
         margin-left : 90px;
